@@ -31,7 +31,17 @@ La Min Clinic (`C:\Users\stephen\Desktop\La Min Clinic`) was used as a read-only
 - Browser-local storage by default, optional Supabase Auth/Postgres/RLS.
 - Installable PWA, cached app shell, Vitest and PGlite schema tests.
 
-This project has independent source, branding, database schema, hosting identity, browser storage (`thet-naing.workshop.v1`) and auth session (`thet-naing.auth.v1`). No clinic environment files, records, credentials, artwork or runtime data were copied. The dependency manifest and lockfile retain the reference stack. The UI is English and accepts Unicode customer names and notes, including Burmese.
+This project has independent source, branding, database schema, hosting identity, browser storage (`thet-naing.workshop.v1`) and auth session (`thet-naing.auth.v1`). No clinic environment files, records, credentials, artwork or runtime data were copied. The dependency manifest and lockfile retain the reference stack. The UI defaults to Burmese, with a visible မြန်မာ / English switch. The choice is remembered on this device using `thet-naing.language.v1`; customer records, amounts, IDs and stored status values remain unchanged.
+
+## For workshop staff
+
+- Choose **မြန်မာ** or **English** at the top of any screen. **အသုံးပြုပုံ / How to use** explains the daily workflow in three steps.
+- Start with **ပြုပြင်အလုပ် အသစ်ထည့်ရန် / Add a repair**. Only the customer name, phone, equipment and problem are required. Optional details are behind an expandable section.
+- The default view is a simple repair list with readable status labels, assigned staff, dates and a short **ဆက်လုပ်ရန် / Next step** instruction. The stage board is still available.
+- Open a repair and follow the large bottom action: check the item, prepare the price, record customer agreement, complete the checks, record actual money received, then return the item.
+- Payment fields start empty so staff enter what was actually received. The app does not take an online payment.
+- On phones, estimates and spare parts use labeled cards. Settings keeps technical cloud configuration collapsed under **Advanced setup**.
+- Burmese headings, labels, feedback, validation, system history, dates, currency labels and export headers are localized. Numbers and repair/part codes remain familiar Latin digits. Existing customer-written text is retained as entered; only the app's sample customer/equipment descriptions are localized for display.
 
 ## Features
 
@@ -94,7 +104,7 @@ public/                 repair-shop branding and PWA icons
 
 ## Validation
 
-`npm test` covers the full repair lifecycle, stock atomicity, duplicate part lines, payment limits, closed-job protection, backup validation, stale writes, damaged-storage recovery, CSV formula escaping and SQL staff/RLS permissions. Browser QA covers intake, quote approval, stock deduction, quality-check gating, payment/collection, stock receipts and mobile layout.
+`npm test` covers the full repair lifecycle, stock atomicity, duplicate part lines, payment limits, closed-job protection, backup validation, stale writes, damaged-storage recovery, CSV formula escaping and SQL staff/RLS permissions. Localization tests check literal UI translation coverage, all stored status labels, language persistence, unchanged saved records after switching, Burmese intake with canonical enum values, system-history translation and safe next-step guidance. Browser QA covers intake, quote approval, stock deduction, quality-check gating, payment/collection, stock receipts, language reload persistence and mobile layout.
 
 ## Scope
 

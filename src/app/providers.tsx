@@ -1,14 +1,9 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { WorkshopContext as Context } from './workshop-context'
 import type { WorkshopData } from '../data/types'
 import { createLocalRepository } from '../data/local'
 import { client, cloudConfigured, createCloudRepository } from '../data/supabase'
 const repo = cloudConfigured ? createCloudRepository() : createLocalRepository(localStorage)
-interface AppState {
-  data: WorkshopData | null; loading: boolean; busy: boolean; error: string; toast: string; signedIn: boolean;
-  mutate: (fn: (data: WorkshopData) => void, message?: string) => Promise<boolean>;
-  refresh: () => Promise<void>; notify: (message: string) => void; clearError: () => void;
-}
-const Context = createContext<AppState | null>(null)
 export function AppProviders({ children }: { children: ReactNode }) {
   const [data, setData] = useState<WorkshopData | null>(null)
   const [loading, setLoading] = useState(true); const [busy, setBusy] = useState(false)
@@ -40,4 +35,3 @@ export function AppProviders({ children }: { children: ReactNode }) {
   }
   return <Context.Provider value={{ data, loading, busy, error, toast, signedIn, mutate, refresh, notify: setToast, clearError: () => setError('') }}>{children}</Context.Provider>
 }
-export function useWorkshop() { const context = useContext(Context); if (!context) throw new Error('Missing app provider'); return context }

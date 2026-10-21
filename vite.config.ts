@@ -9,8 +9,8 @@ export default defineConfig({
     registerType: 'autoUpdate',
     includeAssets: ['icon.svg', 'favicon.ico', 'apple-touch-icon-180x180.png'],
     manifest: {
-      name: 'Thet Naing Service', short_name: 'Thet Naing',
-      description: 'Appliance and industrial machine repair workshop',
+      name: 'သက်နိုင် ပြုပြင်ရေး', short_name: 'သက်နိုင်', lang: 'my',
+      description: 'အိမ်သုံးပစ္စည်းနှင့် စက်မှုစက်ယန္တရား ပြုပြင်ရေး',
       theme_color: '#193d68', background_color: '#f3f6fa', display: 'standalone', start_url: '/',
       icons: [
         { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },

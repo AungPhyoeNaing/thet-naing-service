@@ -1,0 +1,16 @@
+import { useState, type FormEvent } from 'react'
+import { ArrowRight, ClipboardPlus } from 'lucide-react'
+import Modal from '../../components/Modal'
+import { useWorkshop } from '../../app/providers'
+import { createJob } from '../../data/operations'
+import { dateOffset } from '../../lib/format'
+import type { JobDraft } from '../../data/types'
+export default function NewJobSheet({ onClose, onCreated }: { onClose: () => void; onCreated: (id: string) => void }) {
+  const { data, mutate, busy } = useWorkshop(); const [error, setError] = useState('')
+  async function submit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault(); const f = new FormData(e.currentTarget); const draft = Object.fromEntries(f.entries()) as unknown as JobDraft
+    let id = ''; setError(''); const success = await mutate(state => { id = createJob(state, draft).id }, 'Service request created')
+    if (success) onCreated(id); else setError('The request could not be saved. Check the error message and try again.')
+  }
+  return <Modal title="New service request" onClose={onClose} wide><form onSubmit={submit} className="modal-form"><div className="form-intro"><span className="equipment-icon"><ClipboardPlus size={25} /></span><p>Tell us what needs fixing.<br /><span>We’ll give this repair its own job number.</span></p></div><fieldset><legend>Customer details</legend><div className="form-grid"><label>Customer or business name *<input name="customer" required maxLength={120} placeholder="Customer or business name" /></label><label>Phone number *<input name="phone" type="tel" required maxLength={40} placeholder="09 …" /></label><label className="full-width">Address / service location<input name="address" maxLength={300} placeholder="Street, township, city" /></label></div></fieldset><fieldset><legend>Equipment & problem</legend><div className="form-grid"><label>Category<select name="category"><option>Home appliance</option><option>Industrial machine</option></select></label><label>Equipment *<input name="equipment" required maxLength={120} placeholder="e.g. Washing machine, electric motor" /></label><label>Brand & model<input name="brand" maxLength={120} placeholder="e.g. Samsung WW80" /></label><label>Serial number<input name="serial" maxLength={120} placeholder="If available" /></label><label className="full-width">Reported problem *<textarea name="issue" required maxLength={3000} rows={3} placeholder="What happens, and when did it start?" /></label></div></fieldset><fieldset><legend>Plan the repair</legend><div className="form-grid"><label>Service type<select name="serviceType"><option>Workshop drop-off</option><option>On-site visit</option></select></label><label>Priority<select name="priority"><option>Normal</option><option>High</option><option>Urgent</option></select></label><label>Assign technician<select name="technician"><option value="">Unassigned</option>{data!.technicians.map(t => <option key={t}>{t}</option>)}</select></label><label>Target date<input name="dueDate" type="date" defaultValue={dateOffset(2)} /></label></div></fieldset>{error && <p className="form-error" role="alert">{error}</p>}<footer className="modal-actions"><button type="button" className="button" onClick={onClose}>Cancel</button><button className="button primary" disabled={busy}>Create service request<ArrowRight size={17} /></button></footer></form></Modal>
+}

@@ -1,0 +1,65 @@
+/* Readable operational labels; the repair cards carry the information hierarchy. */
+.job-issue { color: #718099; font-size: 11px; min-height: 36px; }
+.job-customer { color: #526882; font-size: 12px; }
+.equipment-heading h4 { font-size: 12px; color: #344b67; }
+.equipment-heading p, .job-number, .job-due { color: #77879f; font-size: 10px; }
+.board-lane h3 { color: #445c7c; font-size: 12px; }
+.board-lane header p { color: #7c8ca4; font-size: 10px; }
+.page-heading p { color: #73839a; }
+.stat-label { color: #62758f; }
+.stats-strip strong small { color: #7a8ba3; }
+.card-detail-status { color: #936d27; background: #fff3d9; font-size: 10px; }
+.detail-diagnosing { color: #4c72b4; background: #edf3ff; }
+.priority-high { color: #946b1d; }
+.priority-urgent { color: #ad5258; }
+.status-badge { color: #647894; }
+.status-in-repair, .status-diagnosing { color: #426cac; }
+.status-awaiting-approval, .status-sent { color: #916b25; }
+.status-waiting-for-parts { color: #96642b; }
+.status-ready-to-collect, .status-collected, .status-approved { color: #397b64; }
+.status-cancelled, .status-declined { color: #a6575c; }
+.modal-error { display:flex; flex-shrink:0; align-items:start; justify-content:space-between; gap:12px; background:#fff0f0; color:#a35151; border-bottom:1px solid #f5d8d8; padding:12px 25px; font-size:12px; line-height:1.7; }
+.modal-error .icon-button { flex-shrink:0; width:23px; height:23px; color:#a35151; }
+.drawer .detail-section label { color:#687f9e; }
+.drawer .detail-section p { color:#7186a2; }
+.drawer .detail-section input, .drawer .detail-section textarea, .drawer .detail-section select { color:#4a6281; }
+.drawer .reported-issue { font-size:13px; }
+.drawer .drawer-tabs button { color:#6a819e; }
+.drawer .drawer-tabs button[aria-selected=true] { color:#2558d9; }
+.drawer .check-row { font-size:12px; }
+.drawer .estimate-line input { font-size:11px; }
+.drawer .estimate-line input:disabled { color:#4a6281; }
+.print-only { display:none; }
+@media(max-width:760px) {
+  .sidebar { visibility:hidden; }
+  .sidebar.is-open { visibility:visible; }
+  .job-board { display:grid; grid-template-columns:repeat(4,minmax(270px,1fr)); gap:14px; overflow-x:auto; scroll-snap-type:x proximity; padding-bottom:12px; }
+  .board-lane { scroll-snap-align:start; padding:0 10px 10px; }
+  .board-lane>header { padding:16px 4px; }
+  .board-lane h3 { font-size:13px; }
+  .board-lane header p { font-size:11px; }
+  .job-card { padding:15px; }
+  .equipment-heading { gap:10px; }
+  .equipment-heading h4 { font-size:13px; }
+  .equipment-heading p { font-size:11px; }
+  .equipment-icon { width:38px; height:40px; }
+  .equipment-icon svg { width:23px; }
+  .job-customer { font-size:12px; }
+  .job-issue { font-size:12px; min-height:40px; }
+  .job-number, .job-due { font-size:11px; }
+  .job-due svg { width:13px; }
+  .technician-avatar { width:25px; height:25px; font-size:9px; }
+  .priority { font-size:10px; }
+  .card-detail-status { font-size:10px; }
+  .add-job { font-size:11px; min-height:40px; }
+  .modal-error { padding:12px 20px; font-size:11px; }
+  .drawer .drawer-tabs { gap:18px; }
+  .drawer .drawer-tabs button { font-size:11px; }
+  .drawer .estimate-line input { font-size:10px; }
+}
+@media print { .modal-error { display:none!important; } }
+@media print {
+  .estimate-line { grid-template-columns:minmax(0,1fr) 70px 130px; align-items:start; border-bottom:1px solid #eee; padding:10px 0; }
+  .estimate-line>input, .estimate-line>span:not(.print-only) { display:none!important; }
+  .estimate-line>.print-only { display:block; color:#222; font-size:12px; line-height:1.7; white-space:normal; }
+}

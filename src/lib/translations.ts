@@ -1,7 +1,12 @@
+import { accessPhotoMessages } from './access-photo-messages'
 import { workerMessages } from './worker-messages'
 export type Language = 'my' | 'en'
 export const LANGUAGE_KEY = 'thet-naing.language.v1'
 export const my: Record<string, string> = {
+  ...accessPhotoMessages,
+  'Charges & payment': 'ပြုပြင်ခနှင့် ရရှိငွေ', 'Repair charges': 'ကျသင့်သော ပြုပြင်ခ', 'Repair total': 'စုစုပေါင်း ပြုပြင်ခ', 'Total (MMK)': 'စုစုပေါင်း (ကျပ်)', 'No charges yet': 'ပြုပြင်ခ မထည့်ရသေးပါ', 'Save charges': 'ပြုပြင်ခ သိမ်းရန်', 'Repair charges saved': 'ပြုပြင်ခ သိမ်းပြီးပါပြီ', 'Repair charges saved.': 'ပြုပြင်ခ သိမ်းပြီးပါပြီ။', 'Start repair': 'ပြုပြင်မှု စတင်ရန်', 'Start the repair when the item and parts are ready.': 'ပစ္စည်းစုံလျှင် ပြုပြင်မှု စတင်ပါ။', '2. Repair the item': '၂။ ပစ္စည်းကို ပြုပြင်ပါ', 'Start the repair and record the parts and labour used.': 'ပြုပြင်မှု စတင်ပြီး အသုံးပြုသော ပစ္စည်းဖိုးနှင့် လက်ခကို ထည့်ပါ။',
+  'This job is closed for charge changes.': 'ဤအလုပ်၏ ပြုပြင်ခကို ပြောင်း၍မရတော့ပါ။', 'Enter valid parts and labour charges.': 'ပစ္စည်းဖိုးနှင့် လက်ခကို မှန်ကန်စွာ ထည့်ပါ။', 'Repair total cannot be less than payments received.': 'စုစုပေါင်းပြုပြင်ခသည် လက်ခံရရှိငွေထက် မနည်းရပါ။', 'Insufficient stock. Receive parts before saving charges.': 'လက်ကျန်မလုံလောက်ပါ။ ပြုပြင်ခမသိမ်းမီ ပစ္စည်းလက်ကျန် ထည့်ပါ။', 'This job is closed for repair.': 'ဤအလုပ်ကို ပြုပြင်ရန် ပြန်ဖွင့်၍မရပါ။',
+
   'TN':'TN',
   'Job':'အလုပ်နံပါတ်', 'SKU':'ပစ္စည်းကုဒ်', 'Part':'ပစ္စည်းအမည်', 'Stock':'လက်ကျန်', 'Unit price (MMK)':'တစ်ခုဈေး (ကျပ်)', 'Quote (MMK)':'ပြုပြင်ခ (ကျပ်)', 'Received (MMK)':'လက်ခံရရှိငွေ (ကျပ်)', 'Balance (MMK)':'ကျန်ငွေ (ကျပ်)',
   '35 μF run capacitor':'35 μF မော်တာ ကပ်ပစီတာ', '6205 motor bearing':'6205 မော်တာ ဘယ်ရင်', 'A42 drive belt':'A42 မောင်းခါးပတ်', 'Washing machine drain pump':'အဝတ်လျှော်စက် ရေထုတ်ပန့်', '24V control relay':'24V ထိန်းချုပ် ရီလေး', 'Refrigerator thermostat':'ရေခဲသေတ္တာ အပူချိန်ထိန်း', '32 mm mechanical seal':'32 mm ရေလုံဆီးလ်', '16A safety switch':'16A လုံခြုံရေးခလုတ်',
@@ -15,7 +20,7 @@ export const my: Record<string, string> = {
   'New service request': 'ပြုပြင်အလုပ် အသစ်ထည့်ရန်', '＋ Add service request': '＋ အလုပ်အသစ်ထည့်ရန်', 'Create service request': 'အလုပ်သိမ်းရန်', 'New request': 'အလုပ်အသစ်',
   'A clear view of every repair, from first call to final check.': 'ပစ္စည်းလက်ခံခြင်း၊ ပြုပြင်ခြင်းနှင့် ပြန်အပ်ခြင်းတို့ကို ဤနေရာတွင် မှတ်တမ်းတင်ပါ။',
   'Manage requests, assign work and keep every repair moving.': 'အလုပ်ရှာရန်၊ ပြုပြင်သူရွေးရန်နှင့် အလုပ်အခြေအနေကြည့်ရန်။',
-  'Active repairs': 'မပြီးသေးသောအလုပ်', 'jobs in the workshop': 'ဆိုင်တွင်ရှိသော အလုပ်များ', 'On the workbench': 'စစ်ဆေး / ပြုပြင်နေ', 'being worked on': 'လုပ်ဆောင်နေသောအလုပ်', 'Awaiting approval': 'ဖောက်သည် အတည်ပြုရန်စောင့်', 'estimates to follow up': 'ပြုပြင်ခ အကြောင်းပြန်ရန်စောင့်', 'Ready for collection': 'ပြန်အပ်ရန် အသင့်ဖြစ်', 'repairs completed': 'ပြုပြင်ပြီးသောအလုပ်',
+  'Active repairs': 'မပြီးသေးသောအလုပ်', 'jobs in the workshop': 'ဆိုင်တွင်ရှိသော အလုပ်များ', 'On the workbench': 'စစ်ဆေး / ပြုပြင်နေ', 'being worked on': 'လုပ်ဆောင်နေသောအလုပ်', 'Awaiting approval': 'ပြုပြင်ရန် စောင့်နေ', 'estimates to follow up': 'ပြုပြင်ခ အကြောင်းပြန်ရန်စောင့်', 'Ready for collection': 'ပြန်အပ်ရန် အသင့်ဖြစ်', 'repairs completed': 'ပြုပြင်ပြီးသောအလုပ်',
   'The repair board': 'အလုပ်အခြေအနေများ', 'All service jobs': 'ပြုပြင်အလုပ်အားလုံး', 'Keep the workshop moving, one job at a time.': 'အလုပ်တစ်ခုကို နှိပ်ပြီး အသေးစိတ်ကြည့်ပါ။',
   'Board': 'အဆင့်အလိုက်ကြည့်ရန်', 'List': 'ရိုးရိုးစာရင်း', 'Job view': 'အလုပ်ကြည့်ရှုမှုပုံစံ', 'Filters': 'ရွေးချယ်ကြည့်ရန်', 'Clear filters': 'အားလုံးပြန်ကြည့်ရန်', 'Find a job…': 'အမည်၊ ဖုန်း၊ ပစ္စည်းဖြင့် ရှာရန်…', 'Filter jobs': 'ပြုပြင်အလုပ်ရှာရန်', 'Filter by equipment category': 'ပစ္စည်းအမျိုးအစား ရွေးရန်',
   'All equipment': 'ပစ္စည်းအားလုံး', 'Home appliance': 'အိမ်သုံးလျှပ်စစ်ပစ္စည်း', 'Industrial machine': 'စက်မှုလုပ်ငန်းသုံးစက်', 'All technicians': 'ပြုပြင်သူအားလုံး', 'All priorities': 'အရေးကြီးမှုအားလုံး', 'All jobs': 'အလုပ်အားလုံး', 'Active jobs': 'မပြီးသေးသောအလုပ်',
@@ -63,6 +68,7 @@ export const my: Record<string, string> = {
 
 // The English view uses everyday workshop language too. Stored status values stay unchanged.
 const english: Record<string,string> = {
+  'Awaiting approval': 'Waiting for repair',
   'Overview':'Today’s work', 'Workshop overview':'Repairs to take care of', 'Service jobs':'Repairs', 'Parts inventory':'Spare parts', 'Estimates':'Repair costs',
   'New service request':'Add a repair', 'Create service request':'Save repair', 'Board':'By repair stage', 'List':'Simple list', 'Filters':'Choose what to show',
   'On the workbench':'Being checked or repaired', 'Mark shared':'I told the customer the price', 'Record approval':'Customer agreed', 'Record decline':'Customer said no',

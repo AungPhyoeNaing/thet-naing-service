@@ -1,6 +1,8 @@
 # Thet Naing Service
 
-A responsive workshop application for home appliance and industrial machine repair. Track a service request through diagnosis, estimate approval, parts issue, repair, quality checks, payment and collection.
+A responsive workshop application for home appliance and industrial machine repair. Track intake, diagnosis, repair charges, parts usage, quality checks, payment and collection.
+
+**New: Admin/Staff access and optional repair/inventory photos.** See [SETUP.md](./SETUP.md) for backend activation, role permissions, account setup and photo backup requirements.
 
 ## Run
 
@@ -38,8 +40,8 @@ This project has independent source, branding, database schema, hosting identity
 - Choose **မြန်မာ** or **English** at the top of any screen. **အသုံးပြုပုံ / How to use** explains the daily workflow in three steps.
 - Start with **ပြုပြင်အလုပ် အသစ်ထည့်ရန် / Add a repair**. Only the customer name, phone, equipment and problem are required. Optional details are behind an expandable section.
 - The default view is a simple repair list with readable status labels, assigned staff, dates and a short **ဆက်လုပ်ရန် / Next step** instruction. The stage board is still available.
-- Open a repair and follow the large bottom action: check the item, prepare the price, record customer agreement, complete the checks, record actual money received, then return the item.
-- Payment fields start empty so staff enter what was actually received. The app does not take an online payment.
+- Open a repair and follow the bottom action. Staff check the item, prepare draft charges and complete finalized repairs. Admin finalizes charges, records actual money received and confirms collection. Optional photos capture intake, findings, repair progress and final checks.
+- Payment fields start empty so Admin enters what was actually received. The app does not take an online payment.
 - On phones, estimates and spare parts use labeled cards. Settings keeps technical cloud configuration collapsed under **Advanced setup**.
 - Burmese headings, labels, feedback, validation, system history, dates, currency labels and export headers are localized. Numbers and repair/part codes remain familiar Latin digits. Existing customer-written text is retained as entered; only the app's sample customer/equipment descriptions are localized for display.
 
@@ -48,9 +50,9 @@ This project has independent source, branding, database schema, hosting identity
 - Overview with a repair board, board/list switching, search, category, priority, technician and status filters.
 - Intake with customer contact/location, equipment/model/serial, problem, workshop/on-site service, priority and target date.
 - Technician assignment, diagnosis, repair notes and dated activity history.
-- Editable estimates with inventory-linked parts and labour. Print estimates or use the browser's Save as PDF option.
-- Staff record that an estimate was shared and whether the customer approved or declined. The app does not send messages.
-- Approval atomically issues quoted stock. Duplicate part lines are aggregated before checking stock. Approved estimates are locked to prevent duplicate issue or price changes after approval.
+- Repair charges with inventory-linked parts and labour. Staff prepare drafts; Admin finalizes them. The simplified repair flow does not add a separate customer-approval screen.
+- Finalizing charges atomically issues stock. Admin revisions issue or return only the stock difference. Duplicate part lines are aggregated before checking stock.
+- Optional repair photos by stage and inventory identification photos, with phone camera/gallery controls, compression and private cloud storage.
 - Three quality checks gate readiness. Full payment and readiness gate collection. Payments are records of money received; there is no online payment processing.
 - Parts catalogue with opening balances, selling prices, reorder minimums, shelf locations, part editing, receipts and low-stock alerts.
 - Customer histories grouped by name and phone.
@@ -70,11 +72,11 @@ Use a **new Supabase project dedicated to this repair shop**. Do not reuse the c
 
 1. Run `supabase/schema.sql` in the new project's SQL Editor. It is rerunnable and preserves an existing workshop.
 2. Disable public sign-ups in Supabase Auth. Create staff users manually in Auth → Users.
-3. Approve each staff user using the SQL shown at the end of the schema. Only approved staff can read or save workshop data. Signing in alone is insufficient.
+3. Bootstrap the first Admin using the SQL at the end of the schema. Then approve existing Auth users from Settings → Accounts & access. See SETUP.md. Existing memberships default to Staff when upgrading; explicitly choose your Admin.
 4. Copy `.env.example` to `.env.local` and fill in the new project URL and public anon/publishable key. Never put a service-role key in a Vite variable.
 5. Restart Vite or rebuild and redeploy. Cloud mode shows a real staff sign-in screen and starts with an empty shared workshop. It does not automatically upload local records. To migrate local records, export a JSON backup and explicitly restore it into the cloud workspace.
 
-Cloud storage uses a single versioned workshop snapshot suitable for a small workshop. `save_workshop` locks the row, checks approved staff and expected revision, then commits the snapshot in one transaction. Direct client writes are revoked. Stale saves are rejected; refresh before retrying. The app checks cloud changes every 30 seconds and on window focus. Cloud writes need a connection and are not queued offline. Export backups regularly. A restore replaces the shared snapshot for all staff after confirmation.
+Cloud storage uses a single versioned workshop snapshot suitable for a small workshop. `save_workshop` is Admin-only. Staff use validated repair commands through `staff_workshop_action`; both lock the row, check active membership and expected revision, and commit in one transaction. Server-stamped history and an independent append-only audit record the acting user. Direct client writes are revoked. Stale saves are rejected; refresh before retrying. The app checks cloud changes every 30 seconds and on window focus. Cloud writes need a connection and are not queued offline. Export backups regularly. Cloud photo binaries require a separate private Storage backup; JSON contains references. An Admin restore replaces the shared snapshot for all staff after confirmation and preserves independent audit records.
 
 Cloud SQL authorization and revision checks are exercised against PGlite with mocked Supabase roles. A real Supabase deployment and production sign-in require your new project and have not been provisioned by this task.
 
@@ -104,7 +106,7 @@ public/                 repair-shop branding and PWA icons
 
 ## Validation
 
-`npm test` covers the full repair lifecycle, stock atomicity, duplicate part lines, payment limits, closed-job protection, backup validation, stale writes, damaged-storage recovery, CSV formula escaping and SQL staff/RLS permissions. Localization tests check literal UI translation coverage, all stored status labels, language persistence, unchanged saved records after switching, Burmese intake with canonical enum values, system-history translation and safe next-step guidance. Browser QA covers intake, quote approval, stock deduction, quality-check gating, payment/collection, stock receipts, language reload persistence and mobile layout.
+`npm test` covers the full repair lifecycle, stock atomicity, duplicate part lines, payment limits, closed-job protection, backup validation, stale writes, damaged-storage recovery, CSV formula escaping and SQL staff/RLS permissions. Localization tests check literal UI translation coverage, all stored status labels, language persistence, unchanged saved records after switching, Burmese intake with canonical enum values, system-history translation and safe next-step guidance. The access/photo release also tests direct-URL restrictions, Admin handoffs, optional camera inputs, safe photo backups, role escalation attempts, disabled accounts, private storage paths and photo ownership. The current environment could not attach the preview browser; browser visual QA and real Supabase sign-in/upload verification remain to be performed.
 
 ## Scope
 

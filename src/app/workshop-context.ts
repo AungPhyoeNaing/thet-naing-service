@@ -1,8 +1,10 @@
 import { createContext, useContext } from 'react'
-import type { WorkshopData } from '../data/types'
+import type { Membership, WorkshopData } from '../data/types'
 export interface AppState {
   data: WorkshopData | null; loading: boolean; busy: boolean; error: string; toast: string; signedIn: boolean;
-  mutate: (fn: (data: WorkshopData) => void, message?: string) => Promise<boolean>;
+  membership: Membership | null; isAdmin: boolean; signOut: () => Promise<void>;
+  restoreBackup: (backup: WorkshopData) => Promise<boolean>;
+  mutate: (fn: (data: WorkshopData) => void, message?: string, expectedUserId?: string) => Promise<boolean>;
   refresh: () => Promise<void>; notify: (message: string) => void; clearError: () => void;
 }
 export const WorkshopContext = createContext<AppState | null>(null)

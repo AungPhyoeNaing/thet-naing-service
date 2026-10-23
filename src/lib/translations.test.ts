@@ -52,7 +52,7 @@ describe('worker guidance', () => {
   it('offers safe next steps through testing, payment and collection', () => {
     const job=createSeed().jobs[0]
     expect(nextStep(job).target).toBe('diagnose')
-    job.status='Diagnosing'; expect(nextStep(job).target).toBe('estimate')
+    job.status='Diagnosing'; expect(nextStep(job).target).toBe('resume')
     job.status='In repair';job.estimateStatus='Approved'; expect(nextStep(job).target).toBe('checks')
     job.checks=[true,true,true];expect(nextStep(job).target).toBe('ready')
     job.status='Ready to collect';job.lines=[{id:'l',description:'Labour',quantity:1,unitPrice:100}]

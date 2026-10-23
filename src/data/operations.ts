@@ -2,6 +2,28 @@ import { uid } from '../lib/format'
 import { finalStatuses, type Job, type JobDraft, type JobStatus, type WorkshopData, type EstimateLine } from './types'
 export const total = (job: Job) => job.lines.reduce((sum, line) => sum + line.quantity * line.unitPrice, 0)
 export const balance = (job: Job) => Math.max(0, total(job) - job.paid)
+export function saveRepairCharges(data: WorkshopData, job: Job, lines: EstimateLine[]) {
+  if (finalStatuses.includes(job.status) || job.status === 'Ready to collect') throw new Error('This job is closed for charge changes.')
+  if (lines.some(l => !l.description.trim() || !Number.isInteger(l.quantity) || l.quantity <= 0 || !Number.isSafeInteger(l.unitPrice) || l.unitPrice < 0)) throw new Error('Enter valid parts and labour charges.')
+  const sum = lines.reduce((s, l) => s + l.quantity * l.unitPrice, 0)
+  if (!Number.isSafeInteger(sum) || sum < job.paid) throw new Error('Repair total cannot be less than payments received.')
+  const issued = new Map<string, number>()
+  if (job.estimateStatus === 'Approved') for (const l of job.lines) if (l.partId) issued.set(l.partId, (issued.get(l.partId) ?? 0) + l.quantity)
+  const required = new Map<string, number>()
+  for (const l of lines) if (l.partId) required.set(l.partId, (required.get(l.partId) ?? 0) + l.quantity)
+  const changes = [...new Set([...issued.keys(), ...required.keys()])].map(id => ({ part: data.parts.find(p => p.id === id), delta: (required.get(id) ?? 0) - (issued.get(id) ?? 0) }))
+  if (changes.some(({part, delta}) => !part || part.stock < delta || !Number.isSafeInteger(part.stock - delta))) throw new Error('Insufficient stock. Receive parts before saving charges.')
+  for (const {part, delta} of changes) part!.stock -= delta
+  job.lines = structuredClone(lines)
+  // Retain the v1 storage marker for existing backups; there is no approval step.
+  job.estimateStatus = 'Approved'
+  note(job, 'Repair charges saved.')
+}
+export function startRepair(data: WorkshopData, job: Job) {
+  if (finalStatuses.includes(job.status) || job.status === 'Ready to collect') throw new Error('This job is closed for repair.')
+  if (job.estimateStatus !== 'Approved') saveRepairCharges(data, job, job.lines)
+  changeStatus(job, 'In repair')
+}
 export function note(job: Job, text: string) { job.history.unshift({ id: uid(), at: new Date().toISOString(), text }) }
 export function createJob(data: WorkshopData, draft: JobDraft) {
   if (!draft.customer.trim() || !draft.phone.trim() || !draft.equipment.trim() || !draft.issue.trim()) throw new Error('Enter the customer, phone, equipment and reported problem.')

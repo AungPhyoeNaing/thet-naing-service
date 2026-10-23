@@ -8,4 +8,12 @@ describe('isolated local repository', () => {
     expect([...values.keys()]).toEqual([STORAGE_KEY]); expect((await repo.load()).revision).toBe(1)
   })
   it('retains damaged storage for recovery instead of replacing it', async () => { const {repo,values} = setup(); values.set(STORAGE_KEY,'broken-json'); await expect(repo.load()).rejects.toThrow('not been overwritten'); expect(values.get(STORAGE_KEY)).toBe('broken-json') })
+  it('preserves the previous workshop if photos fill browser storage', async () => {
+    const {repo,values}=setup();const data=await repo.load();const previous=values.get(STORAGE_KEY)
+    const limited=createLocalRepository({getItem:key=>values.get(key)??null,setItem:()=>{const error=new Error('Quota');error.name='QuotaExceededError';throw error}})
+    data.demo=false
+    await expect(limited.save(data,0)).rejects.toThrow('Your changes were not saved')
+    expect(values.get(STORAGE_KEY)).toBe(previous)
+    expect((await repo.save(data,0)).revision).toBe(1)
+  })
 })

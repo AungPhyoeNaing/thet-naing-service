@@ -14,9 +14,14 @@ export function createLocalRepository(storage: Pick<Storage, 'getItem' | 'setIte
       const write = () => {
         if (read().revision !== expectedRevision) throw new Error('Another tab changed the workshop. Refresh the data and try again.')
         const next = parseWorkshop({ ...data, revision: expectedRevision + 1 })
-        storage.setItem(STORAGE_KEY, JSON.stringify(next)); return next
+        try { storage.setItem(STORAGE_KEY, JSON.stringify(next)) }
+        catch (error) {
+          if (error instanceof Error && error.name === 'QuotaExceededError') throw new Error('This browser is full. Download a backup and use shared cloud mode for more photos. Your changes were not saved.', { cause: error })
+          throw error
+        }
+        return next
       }
-      if (typeof navigator !== 'undefined' && navigator.locks) return navigator.locks.request(STORAGE_KEY, write)
+      if (typeof navigator !== 'undefined' && navigator.locks) return navigator.locks.request(STORAGE_KEY, async () => write())
       return write()
     },
   }

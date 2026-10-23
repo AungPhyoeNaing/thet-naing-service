@@ -20,5 +20,5 @@ export default defineConfig({
     },
     workbox: { globPatterns: ['**/*.{js,css,html,svg,png,woff2}'], navigateFallbackDenylist: [/^\/api\//] },
   })],
-  test: { environment: 'node', include: ['src/**/*.test.{ts,tsx}'] },
+  test: { environment: 'node', include: ['src/**/*.test.{ts,tsx}'], env: { VITE_SUPABASE_URL: '', VITE_SUPABASE_ANON_KEY: '' } },
 })

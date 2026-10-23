@@ -27,7 +27,7 @@ export default function NewJobSheet({ onClose, onCreated }: { onClose: () => voi
         <label className="full-width">{tr('Equipment *')}<input name="equipment" required maxLength={120} placeholder={tr('e.g. Washing machine, electric motor')} /></label>
         <label className="full-width">{tr('Reported problem *')}<textarea name="issue" required maxLength={3000} rows={3} placeholder={tr('What happens, and when did it start?')} /></label>
       </div>
-      <details className="optional-details"><summary>{tr('More details (optional)')}</summary><div className="form-grid">
+      <p className="muted small">{tr("After saving, you can add optional intake photos in Repair details.")}</p><details className="optional-details"><summary>{tr('More details (optional)')}</summary><div className="form-grid">
         <label>{tr('Category')}<select name="category" defaultValue="Home appliance"><option value="Home appliance">{tr('Home appliance')}</option><option value="Industrial machine">{tr('Industrial machine')}</option></select></label>
         <label>{tr('Service type')}<select name="serviceType"><option value="Workshop drop-off">{tr('Workshop drop-off')}</option><option value="On-site visit">{tr('On-site visit')}</option></select></label>
         <label>{tr('Priority')}<select name="priority"><option value="Normal">{tr('Normal')}</option><option value="High">{tr('High')}</option><option value="Urgent">{tr('Urgent')}</option></select></label>

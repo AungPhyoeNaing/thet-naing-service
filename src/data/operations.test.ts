@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createSeed, emptyWorkshop } from './seed'
-import { approveEstimate, balance, changeStatus, createJob, recordPayment, saveEstimate, sendEstimate, total } from './operations'
+import { approveEstimate, balance, changeStatus, createJob, recordPayment, saveEstimate, sendEstimate, saveRepairCharges, startRepair, total } from './operations'
 import { parseWorkshop } from './validation'
 describe('workshop repair workflow', () => {
   it('validates the complete demo and an empty workshop', () => { expect(parseWorkshop(createSeed()).jobs).toHaveLength(11); expect(parseWorkshop(emptyWorkshop()).demo).toBe(false) })
@@ -36,5 +36,43 @@ describe('workshop repair workflow', () => {
     expect(() => parseWorkshop({version:1,jobs:[]})).toThrow('valid'); const data = createSeed(); data.jobs[0].paid = 300
     expect(() => parseWorkshop(data)).toThrow('valid'); const negative = createSeed(); negative.parts[0].stock = -1; expect(() => parseWorkshop(negative)).toThrow()
     const duplicate = createSeed(); duplicate.jobs.push(duplicate.jobs[0]); expect(() => parseWorkshop(duplicate)).toThrow()
+  })
+})
+
+
+describe('direct repair workflow', () => {
+  it('starts without an estimate and completes checks and collection', () => {
+    const data = createSeed(); const job = data.jobs[0]
+    startRepair(data, job)
+    expect(job.status).toBe('In repair')
+    expect(() => changeStatus(job, 'Ready to collect')).toThrow('quality checks')
+    job.checks = [true, true, true]
+    changeStatus(job, 'Ready to collect'); changeStatus(job, 'Collected')
+    expect(parseWorkshop(data).jobs[0].status).toBe('Collected')
+  })
+  it('issues actual parts only once, adjusts stock and preserves payment limits', () => {
+    const data = createSeed(); const job = data.jobs[0]; const stock = data.parts[0].stock
+    const lines = [{id:'part',partId:'p1',description:'Capacitor',quantity:2,unitPrice:100}]
+    startRepair(data, job); saveRepairCharges(data, job, lines)
+    expect(data.parts[0].stock).toBe(stock - 2)
+    saveRepairCharges(data, job, lines); startRepair(data, job)
+    expect(data.parts[0].stock).toBe(stock - 2)
+    saveRepairCharges(data, job, [{...lines[0],quantity:1}])
+    expect(data.parts[0].stock).toBe(stock - 1)
+    recordPayment(job, 50)
+    expect(() => saveRepairCharges(data, job, [])).toThrow('less than payments')
+    expect(() => recordPayment(job, 51)).toThrow('remaining balance')
+    recordPayment(job, 50); job.checks = [true,true,true]
+    changeStatus(job, 'Ready to collect'); changeStatus(job, 'Collected')
+    expect(() => saveRepairCharges(data, job, lines)).toThrow('closed')
+    expect(parseWorkshop(data).jobs[0].paid).toBe(100)
+  })
+  it('does not partially issue stock when actual charges exceed available stock', () => {
+    const data = createSeed(); const job = data.jobs[0]; const before = structuredClone(data)
+    expect(() => saveRepairCharges(data, job, [
+      {id:'a',partId:'p1',description:'Cap',quantity:1,unitPrice:1},
+      {id:'b',partId:'p2',description:'Bearing',quantity:9999,unitPrice:1}
+    ])).toThrow('Insufficient stock')
+    expect(data).toEqual(before)
   })
 })

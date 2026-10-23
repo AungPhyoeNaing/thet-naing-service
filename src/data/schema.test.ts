@@ -8,7 +8,8 @@ describe('Supabase schema access and atomic updates', () => {
   let db: PGlite
   beforeAll(async () => {
     db = new PGlite(); await db.exec(`create role anon; create role authenticated; create schema auth; create table auth.users(id uuid primary key, email text); create function auth.uid() returns uuid language sql stable as $$ select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$; grant usage on schema auth to authenticated; grant execute on function auth.uid() to authenticated; insert into auth.users values ('${approved}','approved@example.test'), ('${outsider}','outsider@example.test');`)
-    await db.exec(readFileSync(new URL('../../supabase/schema.sql', import.meta.url),'utf8')); await db.query('insert into public.workshop_staff values ($1)',[approved])
+    await db.exec(`create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]); create table storage.objects(bucket_id text,name text); alter table storage.objects enable row level security;`);
+    await db.exec(readFileSync(new URL('../../supabase/schema.sql', import.meta.url),'utf8')); await db.query("insert into public.workshop_staff(user_id,role) values ($1,'admin')",[approved])
   },30000)
   afterAll(async () => { await db?.close() })
   async function asUser(id: string) { await db.exec('reset role'); await db.query("select set_config('request.jwt.claim.sub',$1,false)",[id]); await db.exec('set role authenticated') }

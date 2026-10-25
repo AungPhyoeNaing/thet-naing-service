@@ -66,6 +66,20 @@ Staff writes use `staff_workshop_action`, which locks the server snapshot, valid
 
 The server stamps new repair-history entries with the acting user and writes an independent audit with before/after changes. Settings shows the latest 30 audit summaries. Existing historical entries without an actor retain their original contents; the system does not invent an author for them.
 
+## 6. Vercel same-origin connection (VPN-free access)
+
+The browser connects to `/workshop-api` on the workshop website. Vercel forwards Auth, REST/RPC and Storage requests to this workshop's fixed Supabase project. Signed photo links are also generated on the website's domain; uploads and private image downloads follow the same route. Existing sessions keep the `thet-naing.auth.v1` key. Roles and Supabase RLS continue to apply to every request.
+
+Keep the existing `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` settings in Vercel. The project URL remains `https://sydhltbgymwutkvuhmpl.supabase.co` (without `/rest/v1/`); do not replace it with the website URL. No additional secret or service-role key is needed. `vercel.json` pins the proxy upstream to this project; if the Supabase project is ever changed, update both that file and the Vercel environment variables.
+
+Deploy the latest GitHub commit on Vercel. A push to `main` triggers deployment when Vercel's Git integration is connected; otherwise select Redeploy after importing/syncing the latest source. Vite dev/preview servers use the matching local proxy, so browser requests stay same-origin during development too. A plain static host must provide equivalent proxy routes to run this version in cloud mode.
+
+Auth responses, records and private photos are marked `private, no-store`; both Vercel CDN caching and service-worker navigation fallback are disabled for the API paths. The proxy does not grant any new account permissions or use an admin credential.
+
+After deployment, refresh the app so the installed PWA picks up its updated service worker. With VPN off, check sign-in, repair loading/saving, a photo upload and a photo opened in a new tab. Browser network requests for those operations should all use your website's `/workshop-api/...` paths. An anonymous request to `/workshop-api/auth/v1/health` should return Supabase's health response; a protected REST request without sign-in should still be denied. If you see app HTML instead, check that Vercel deployed the latest `vercel.json` and commit.
+
+This removes the browser's need to reach Supabase directly. It still depends on the visitor being able to reach the website's Vercel/custom domain and Vercel being able to reach Supabase. Validate on the affected connection before treating the VPN issue as resolved. Email links/OAuth and Realtime WebSockets are outside this app's current password-login and polling workflow.
+
 Run `npm test`, `npm run build`, and `npm run lint`. Tests use PGlite with mocked Auth and Storage tables to exercise SQL policies and commands. Before operational use, also verify real Supabase sign-in, staff restrictions, image upload/viewing, disabling a session, and backup/restore on your configured project. That live backend check cannot be completed without the project's configuration and accounts.
 
 Reference: [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security), [private Storage buckets](https://supabase.com/docs/guides/storage/buckets/fundamentals), [Storage access policies](https://supabase.com/docs/guides/storage/security/access-control).

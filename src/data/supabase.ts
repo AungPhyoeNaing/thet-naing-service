@@ -1,9 +1,13 @@
-import { createClient } from '@supabase/supabase-js'
+import { createWorkshopClient } from './supabase-transport'
 import type { WorkshopRepository } from './types'
 import { parseWorkshop } from './validation'
 import { staffAction } from './permissions'
 export const cloudConfigured = !!(import.meta.env.VITE_SUPABASE_URL?.trim() && import.meta.env.VITE_SUPABASE_ANON_KEY?.trim())
-export const client = cloudConfigured ? createClient(import.meta.env.VITE_SUPABASE_URL.trim().replace(/\/+$/, ''), import.meta.env.VITE_SUPABASE_ANON_KEY.trim(), { auth: { storageKey: 'thet-naing.auth.v1' }, global: { fetch: (input, init) => fetch(input, { ...init, signal: init?.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000) }) } }) : null
+export const client = cloudConfigured ? createWorkshopClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY,
+  typeof window === 'undefined' ? undefined : window.location.origin,
+) : null
 export function createCloudRepository(): WorkshopRepository {
   return {
     async load() {

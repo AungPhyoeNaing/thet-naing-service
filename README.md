@@ -102,7 +102,7 @@ public/                 repair-shop branding and PWA icons
 
 ## Deployment
 
-`npm run build` produces static output in `dist`. `.openai/hosting.json` binds this app to its own private Site. For another static host, serve `dist` and rewrite unknown navigation routes to `index.html`; a portable Vercel configuration is included. Use HTTPS for PWA installation. The service worker caches only the app shell/assets, not cloud API data or authentication responses. The generated app icons are independent repair-shop artwork derived from `public/icon.svg`.
+`npm run build` produces static output in `dist`. On Vercel, `vercel.json` proxies `/workshop-api/auth/v1`, `/workshop-api/rest/v1` and `/workshop-api/storage/v1` to this workshop's Supabase project before applying SPA routing. Browser login, data, uploads and signed photo URLs stay on the website's domain. Keep the existing Supabase build-time environment variables; no additional key or database migration is needed. See SETUP.md section 6. Other hosts must provide equivalent proxy routes for cloud mode. The historical `.openai/hosting.json` records the earlier Sites identity and does not configure Vercel. Use HTTPS for PWA installation. The service worker caches only app shell/assets and excludes API navigation; private API/media responses are not cached. The generated app icons are independent repair-shop artwork derived from `public/icon.svg`.
 
 ## Validation
 

@@ -1,6 +1,18 @@
 {
-  "rewrites": [{ "source": "/((?!assets/|sw.js|workbox-|manifest.webmanifest|registerSW.js|.*\\.(?:svg|png|ico|woff2?)$).*)", "destination": "/index.html" }],
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    { "source": "/workshop-api/auth/v1/:path*", "destination": "https://sydhltbgymwutkvuhmpl.supabase.co/auth/v1/:path*" },
+    { "source": "/workshop-api/rest/v1/:path*", "destination": "https://sydhltbgymwutkvuhmpl.supabase.co/rest/v1/:path*" },
+    { "source": "/workshop-api/storage/v1/:path*", "destination": "https://sydhltbgymwutkvuhmpl.supabase.co/storage/v1/:path*" },
+    { "source": "/((?!workshop-api(?:/|$)|assets/|sw.js|workbox-|manifest.webmanifest|registerSW.js|.*\\.(?:svg|png|ico|woff2?)$).*)", "destination": "/index.html" }
+  ],
   "headers": [
+    { "source": "/workshop-api/:path*", "headers": [
+      { "key": "Cache-Control", "value": "private, no-store" },
+      { "key": "CDN-Cache-Control", "value": "no-store" },
+      { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
+      { "key": "x-vercel-enable-rewrite-caching", "value": "0" }
+    ] },
     { "source": "/sw.js", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
     { "source": "/assets/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] }
   ]

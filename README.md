@@ -37,6 +37,8 @@ This project has independent source, branding, database schema, hosting identity
 
 ## For workshop staff
 
+Phone and tablet layouts use a compact sticky header, accessible navigation drawer, single-column forms and labeled charge cards. Inventory switches to labeled cards when the workspace is narrow; the repair board scrolls within its own lanes. Dialog actions remain visible, inputs use readable phone-sized text, and safe-area padding supports notched screens. Responsive QA covers 320–1440 px widths in Burmese and English, plus short landscape repair dialogs.
+
 - Choose **မြန်မာ** or **English** at the top of any screen. **အသုံးပြုပုံ / How to use** explains the daily workflow in three steps.
 - Start with **ပြုပြင်အလုပ် အသစ်ထည့်ရန် / Add a repair**. Only the customer name, phone, equipment and problem are required. Optional details are behind an expandable section.
 - The default view is a simple repair list with readable status labels, assigned staff, dates and a short **ဆက်လုပ်ရန် / Next step** instruction. The stage board is still available.

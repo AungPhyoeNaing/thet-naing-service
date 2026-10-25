@@ -18,13 +18,48 @@ beforeAll(() => {
   HTMLDialogElement.prototype.close = function() { this.removeAttribute('open') }
 })
 beforeEach(() => { localStorage.clear(); localStorage.setItem(LANGUAGE_KEY,'en'); window.history.replaceState(null,'','/') })
-afterEach(cleanup)
+afterEach(() => { cleanup(); vi.restoreAllMocks() })
 function context(role: WorkshopRole): AppState {
   return { data:createSeed(), membership:{user_id:'worker-id',role,active:true,display_name:'Workshop user',technician_name:''}, isAdmin:role==='admin',signedIn:true,loading:false,busy:false,error:'',toast:'',mutate:vi.fn().mockResolvedValue(true),restoreBackup:vi.fn(),refresh:vi.fn(),notify:vi.fn(),clearError:vi.fn(),signOut:vi.fn() }
 }
 const wrap = (state: AppState, element: React.ReactNode) => <LanguageProvider><WorkshopContext.Provider value={state}>{element}</WorkshopContext.Provider></LanguageProvider>
 
 describe('role-aware screens and repair handoffs', () => {
+  it('keeps the phone menu keyboard focus inside the drawer and restores it on Escape', async () => {
+    vi.spyOn(window, 'matchMedia').mockImplementation(query => ({
+      matches: true, media: query, onchange: null,
+      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+    }))
+    const view = render(wrap(context('admin'), <App />))
+    const menu = screen.getByRole('button', { name: 'Open navigation' })
+    expect(view.container.querySelector('#workshop-navigation')?.hasAttribute('inert')).toBe(true)
+    fireEvent.click(menu)
+    const drawer = screen.getByRole('dialog', { name: 'Main navigation' })
+    expect(document.body.style.overflow).toBe('hidden')
+    const close = within(drawer).getByRole('button', { name: 'Close navigation' })
+    expect(document.activeElement).toBe(close)
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true })
+    expect(document.activeElement).toBe(within(drawer).getByRole('link', { name: 'Settings & backup' }))
+    fireEvent.keyDown(document, { key: 'Tab' })
+    expect(document.activeElement).toBe(close)
+    fireEvent.keyDown(document, { key: 'Escape' })
+    await waitFor(() => expect(menu.getAttribute('aria-expanded')).toBe('false'))
+    expect(document.activeElement).toBe(menu)
+    expect(document.body.style.overflow).toBe('')
+    expect(view.container.querySelector('.workspace')?.hasAttribute('inert')).toBe(false)
+  })
+  it('closes the phone menu after navigating to another screen', async () => {
+    vi.spyOn(window, 'matchMedia').mockImplementation(query => ({
+      matches: true, media: query, onchange: null,
+      addListener: vi.fn(), removeListener: vi.fn(), addEventListener: vi.fn(), removeEventListener: vi.fn(), dispatchEvent: vi.fn(),
+    }))
+    render(wrap(context('admin'), <App />))
+    fireEvent.click(screen.getByRole('button', { name: 'Open navigation' }))
+    fireEvent.click(within(screen.getByRole('dialog', { name: 'Main navigation' })).getByRole('link', { name: 'Spare parts' }))
+    await screen.findByRole('heading', { name: 'Spare parts' })
+    expect(screen.getByRole('button', { name: 'Open navigation' }).getAttribute('aria-expanded')).toBe('false')
+    expect(document.body.style.overflow).toBe('')
+  })
   it('shows only Today’s work and Repairs to Staff and keeps sign-out available', async () => {
     const state=context('staff'); render(wrap(state,<App />))
     expect(within(screen.getByRole('navigation',{name:'Main navigation'})).getAllByRole('link').map(link=>link.textContent)).toEqual(['Today’s work','Repairs10'])
